@@ -16,35 +16,10 @@ module SeqMul_280(clk, reset, U0, U1, U2, U3, V0, V1, V2, V3, W, done);
     assign W=final;
 
 
-    reg [283:0] W0, W1, W2, W4, W5, W6; 
-    reg [580:0] W0_ext, W1_ext, W2_ext, W3, W4_ext, W5_ext, W6_ext;
+    reg [580:0] W0, W1, W2, W3, W4, W5, W6;
 
 
     reg [7:0]  state;
-
-    reg [283:0] adder_1_in_1, adder_1_in_2, adder_1_in_3, adder_1_in_4, adder_1_in_5, adder_1_in_6;
-    reg [283:0] adder_2_in_1, adder_2_in_2, adder_2_in_3, adder_2_in_4, adder_2_in_5, adder_2_in_6;
-    wire [283:0] adder_1_out, adder_2_out;
-
-    SixInputAdder #(284) adder5(
-        .in1(adder_1_in_1),
-        .in2(adder_1_in_2),
-        .in3(adder_1_in_3),
-        .in4(adder_1_in_4),
-        .in5(adder_1_in_5),
-        .in6(adder_1_in_6),
-        .out(adder_1_out)
-    );
-
-    SixInputAdder #(284) adder4(
-        .in1(adder_2_in_1),
-        .in2(adder_2_in_2),
-        .in3(adder_2_in_3),
-        .in4(adder_2_in_4),
-        .in5(adder_2_in_5),
-        .in6(adder_2_in_6),
-        .out(adder_2_out)
-    );
 
 
     reg [283:0] mult_1_in_1, mult_1_in_2;
@@ -55,14 +30,12 @@ module SeqMul_280(clk, reset, U0, U1, U2, U3, V0, V1, V2, V3, W, done);
     wire [580:0] mult_1_out_ext = {mult_1_out, 13'b0};
     wire [580:0] mult_2_out_ext = {mult_2_out, 13'b0};
 
-
     reg seq70_reset_1;
     reg seq70_reset_2;
 
     wire seq70done_1;
     wire seq70done_2;
 
-     
 
 
     SeqMul_70 mult_1(
@@ -86,32 +59,41 @@ module SeqMul_280(clk, reset, U0, U1, U2, U3, V0, V1, V2, V3, W, done);
     reg [580:0] dividend_1, dividend_2;
     wire [580:0] quotient_1, quotient_2;
 
-    div_by_x4_plus_x #(581) div3 (
+    reg div_1_rst, div_2_rst;
+    wire div_1_done, div_2_done;
+
+    div_by_x4_plus_x #(581) div1 (
+    .clk(clk), 
+    .rst(div_1_rst),
     .p(dividend_1),
-    .q(quotient_1)
+    .q(quotient_1),
+    .done(div_1_done)
     );
 
-    div_by_x4_plus_x2 #(581) div4(
+    div_by_x4_plus_x2 #(581) div8 (
+    .clk(clk), 
+    .rst(div_2_rst),
     .p(dividend_2),
-    .q(quotient_2)
+    .q(quotient_2),
+    .done(div_2_done)
     );
 
-    reg [580:0] adder_3_in_1, adder_3_in_2, adder_3_in_3, adder_3_in_4, adder_3_in_5, adder_3_in_6;
-    wire [580:0] adder_3_out;
+    reg [580:0] adder_in_1, adder_in_2, adder_in_3, adder_in_4, adder_in_5, adder_in_6;
+    wire [580:0] adder_out;
 
     SixInputAdder #(581) adder3(
-        .in1(adder_3_in_1),
-        .in2(adder_3_in_2),
-        .in3(adder_3_in_3),
-        .in4(adder_3_in_4),
-        .in5(adder_3_in_5),
-        .in6(adder_3_in_6),
-        .out(adder_3_out)
+        .in1(adder_in_1),
+        .in2(adder_in_2),
+        .in3(adder_in_3),
+        .in4(adder_in_4),
+        .in5(adder_in_5),
+        .in6(adder_in_6),
+        .out(adder_out)
     );
 
 
     always @(posedge clk) begin
-        $display(state);
+        // $display(state);
         if(reset) begin
             state <= 0;
             done <= 0;
@@ -120,397 +102,455 @@ module SeqMul_280(clk, reset, U0, U1, U2, U3, V0, V1, V2, V3, W, done);
         end else begin
             case(state)
                 0: begin
-                    W0 <= 284'b0;
-                    W1 <= 284'b0;
-                    W2 <= 284'b0;
+                    W0 <= 581'b0;
+                    W1 <= 581'b0;
+                    W2 <= 581'b0;
                     W3 <= 581'b0;
-                    W4 <= 284'b0;
-                    W5 <= 284'b0;
-                    W6 <= 284'b0;
-                    adder_1_in_1 <= 284'b0;
-                    adder_1_in_2 <= 284'b0;
-                    adder_1_in_3 <= 284'b0;
-                    adder_1_in_4 <= 284'b0;
-                    adder_1_in_5 <= 284'b0;
-                    adder_1_in_6 <= 284'b0;
-                    adder_2_in_1 <= 284'b0;
-                    adder_2_in_2 <= 284'b0;
-                    adder_2_in_3 <= 284'b0;
-                    adder_2_in_4 <= 284'b0;
-                    adder_2_in_5 <= 284'b0;
-                    adder_2_in_6 <= 284'b0;
+                    W4 <= 581'b0;
+                    W5 <= 581'b0;
+                    W6 <= 581'b0;
+
+                    adder_in_1 <= 581'b0;
+                    adder_in_2 <= 581'b0;
+                    adder_in_3 <= 581'b0;
+                    adder_in_4 <= 581'b0;
+                    adder_in_5 <= 581'b0;
+                    adder_in_6 <= 581'b0;
 
                     mult_1_in_1 <= 284'b0;
                     mult_1_in_2 <= 284'b0;
                     mult_2_in_1 <= 284'b0;
                     mult_2_in_2 <= 284'b0;
-                    state <= 1;
                     seq70_reset_1 <= 1;
                     seq70_reset_2 <= 1;
+                    state <= 1;
                 end
                 1: begin
-                    adder_1_in_1 <= {U0, 4'b0};
-                    adder_1_in_2 <= {U1, 4'b0};
-                    adder_1_in_3 <= {U2, 4'b0};
-                    adder_1_in_4 <= {U3, 4'b0};
-                    adder_1_in_5 <= 284'b0;
-                    adder_2_in_1 <= {V0, 4'b0};
-                    adder_2_in_2 <= {V1, 4'b0};
-                    adder_2_in_3 <= {V2, 4'b0};
-                    adder_2_in_4 <= {V3, 4'b0};
-                    adder_2_in_5 <= 284'b0;
-                    state <= 2;
+                    adder_in_1[580:297] <= {U0, 4'b0};
+                    adder_in_2[580:297] <= {U1, 4'b0};
+                    adder_in_3[580:297]<= {U2, 4'b0};
+                    adder_in_4[580:297] <= {U3, 4'b0};
+                    adder_in_1[283:0] <= {V0, 4'b0};
+                    adder_in_2[283:0] <= {V1, 4'b0};
+                    adder_in_3[283:0] <= {V2, 4'b0};
+                    adder_in_4[283:0] <= {V3, 4'b0};
+                    state <= 101;
                 end
 
-                2: begin
+                101:begin
+                    W1[580:297] <= adder_out[580:297];
+                    W2[580:297] <= adder_out[283:0];
+                    state <= 2;
+                
+                end
 
-                    mult_1_in_1 <= adder_1_out;
-                    mult_1_in_2 <= adder_2_out;
+
+                2: begin
+                    mult_1_in_1 <= W1[580:297];
+                    mult_1_in_2 <= W2[580:297];
                     seq70_reset_1 <= 0;
-                    W1 <= adder_1_out;
-                    W2 <= adder_2_out;
                     state <= 3;
                 end
                 3: begin
                     if(seq70done_1) begin
-
-                        // $display("%b", adder_2_out);
-                        // $display("\n");
                         W3 <= mult_1_out_ext;
-                        adder_1_in_1 <= {U1, 4'b0};
-                        adder_1_in_2 <= {1'b0, U2, 3'b0};
-                        adder_1_in_3 <= {2'b0, U3, 2'b0};
-                        adder_1_in_4 <= 284'b0;
-                        adder_1_in_5 <= 284'b0;
-                        adder_2_in_1 <= {V1, 4'b0};
-                        adder_2_in_2 <= {1'b0, V2, 3'b0};
-                        adder_2_in_3 <= {2'b0, V3, 2'b0};
-                        adder_2_in_4 <= 284'b0;
-                        adder_2_in_5 <= 284'b0;
+                        adder_in_1[580:297] <= {U1, 4'b0};
+                        adder_in_2[580:297] <= {1'b0, U2, 3'b0};
+                        adder_in_3[580:297] <= {2'b0, U3, 2'b0};
+                        adder_in_4[580:297] <= 284'b0;
+                        adder_in_1[283:0] <= {V1, 4'b0};
+                        adder_in_2[283:0] <= {1'b0, V2, 3'b0};
+                        adder_in_3[283:0] <= {2'b0, V3, 2'b0};
+                        adder_in_4[283:0] <= 284'b0;
                         seq70_reset_1 <= 1;
-                        state <= 4;
+                        state <= 104;
                     end
                     else begin
                         state <= 3;
                     end
                 end
 
-
+                104: begin
+                    W0[580:297] <= adder_out[580:297];
+                    W6[580:297] <= adder_out[283:0];
+                    state <= 4;
+                end
                 4: begin
-                    
-                    W0 <= adder_1_out;
-                    W6 <= adder_2_out;
-                    adder_1_in_1 <= {adder_1_out>>1};
-                    adder_1_in_2 <= {2'b0, U3, 2'b0};
-                    adder_1_in_3 <= {1'b0, U3, 3'b0};
-                    adder_1_in_4 <= {W1};
-                    adder_1_in_5 <= 284'b0;
-                    adder_2_in_1 <= {adder_2_out>>1};
-                    adder_2_in_2 <= {1'b0, V3, 3'b0};
-                    adder_2_in_3 <= {2'b0, V3, 2'b0};
-                    adder_2_in_4 <= {W2};
-                    adder_2_in_5 <= 284'b0;
+                    adder_in_1[580:297] <= {1'b0, W0[580:298]};
+                    adder_in_2[580:297] <= {2'b0, U3, 2'b0};
+                    adder_in_3[580:297] <= {1'b0, U3, 3'b0};
+                    adder_in_4[580:297] <= W1[580:297];
+                    adder_in_1[283:0] <= {1'b0, W6[580:298]};
+                    adder_in_2[283:0] <= {1'b0, V3, 3'b0};
+                    adder_in_3[283:0] <= {2'b0, V3, 2'b0};
+                    adder_in_4[283:0] <= {W2[580:297]};
                     state <= 5;
                 end
 
                 5: begin
-                    W4 <= adder_1_out;
-                    W5 <= adder_2_out;
-                    adder_1_in_1 <= W0>>1;
-                    adder_1_in_2 <= {U0, 4'b0};
-                    adder_1_in_3 <= 284'b0;
-                    adder_1_in_4 <= 284'b0;
-                    adder_1_in_5 <= 284'b0;
-                    adder_2_in_1 <= W6>>1;
-                    adder_2_in_2 <= {V0, 4'b0};
-                    adder_2_in_3 <= 284'b0;
-                    adder_2_in_4 <= 284'b0;
-                    adder_2_in_5 <= 284'b0;
-                    state <= 6;
+                    W4[580:297] <= adder_out[580:297];
+                    W5[580:297] <= adder_out[283:0];
+                    adder_in_1[580:297] <= {1'b0, W0[580:298]};
+                    adder_in_2[580:297] <= {U0, 4'b0};
+                    adder_in_3[580:297] <= 284'b0;
+                    adder_in_4[580:297] <= 284'b0;
+                    adder_in_5[580:297] <= 284'b0;
+                    adder_in_1[283:0] <= {1'b0, W6[580:298]};
+                    adder_in_2[283:0] <= {V0, 4'b0};
+                    adder_in_3[283:0] <= 284'b0;
+                    adder_in_4[283:0] <= 284'b0;
+                    adder_in_5[283:0] <= 284'b0;
+                    state <= 106;
                 end
+                106: begin
+                    W0[580:297] <= adder_out[580:297];
+                    W6[580:297] <= adder_out[283:0];
+                    state <= 6;
 
+                end
                 6: begin
-                    W0 <= adder_1_out;
-                    W6 <= adder_2_out;
-                    mult_1_in_1 <= W5;
-                    mult_1_in_2 <= W4;
-                    mult_2_in_1 <= adder_1_out;
-                    mult_2_in_2 <= adder_2_out;
+                    mult_1_in_1 <= W5[580:297];
+                    mult_1_in_2 <= W4[580:297];
+                    mult_2_in_1 <= W0[580:297];
+                    mult_2_in_2 <= W6[580:297];
                     seq70_reset_1 <= 0;
                     seq70_reset_2 <= 0;
                     state <= 7; 
                 end
                 7: begin
                     if(seq70done_1 && seq70done_2) begin
-                        // $display("%b", mult_1_out_ext);
-                        // $display("%b", mult_2_out_ext);
-
-                        // $display("%b", adder_2_out);
-                        // $display("%b", adder_1_out);
-                        W5_ext <= mult_1_out_ext;
-                        W4_ext <= mult_2_out_ext;
-                        adder_1_in_1 <= {3'b0, U0, 1'b0};
-                        adder_1_in_2 <= {2'b0, U1, 2'b0};
-                        adder_1_in_3 <= {1'b0, U2, 3'b0};
-                        adder_1_in_4 <= 284'b0;
-                        adder_1_in_5 <= 284'b0;
-                        adder_2_in_1 <= {3'b0, V0, 1'b0};
-                        adder_2_in_2 <= {2'b0, V1, 2'b0};
-                        adder_2_in_3 <= {1'b0, V2, 3'b0};
-                        adder_2_in_4 <= 284'b0;
-                        adder_2_in_5 <= 284'b0;
                         seq70_reset_1 <= 1;
                         seq70_reset_2 <= 1;
-                        state <= 8;
-
+                        W5 <= mult_1_out_ext;
+                        W4 <= mult_2_out_ext;
+                        adder_in_1[580:297] <= {3'b0, U0, 1'b0};
+                        adder_in_2[580:297] <= {2'b0, U1, 2'b0};
+                        adder_in_3[580:297] <= {1'b0, U2, 3'b0};
+                        adder_in_4[580:297] <= 284'b0;
+                        adder_in_5[580:297] <= 284'b0;
+                        adder_in_1[283:0] <= {3'b0, V0, 1'b0};
+                        adder_in_2[283:0] <= {2'b0, V1, 2'b0};
+                        adder_in_3[283:0] <= {1'b0, V2, 3'b0};
+                        adder_in_4[283:0] <= 284'b0;
+                        adder_in_5[283:0] <= 284'b0;
+                        state <= 108;
                     end
                     else begin
                         state <= 7;
                     end
+                end
 
+                108: begin
+                    W0[580:297] <= adder_out[580:297];
+                    W6[580:297] <= adder_out[283:0];
+                    state <= 8;
                 end
 
 
                 8: begin
-                    W0 <= adder_1_out;
-                    W6 <= adder_2_out;
-                    adder_1_in_1 <= W1;
-                    adder_1_in_2 <= adder_1_out;
-                    adder_1_in_3 <= {2'b0, U0, 2'b0};
-                    adder_1_in_4 <= {1'b0, U0, 3'b0};
-                    adder_1_in_5 <= 284'b0;
-                    adder_2_in_1 <= W2;
-                    adder_2_in_2 <= adder_2_out;
-                    adder_2_in_3 <= {2'b0, V0, 2'b0};
-                    adder_2_in_4 <= {1'b0, V0, 3'b0};
-                    adder_2_in_5 <= 284'b0;
+                    adder_in_1[580:297] <= W1[580:297];
+                    adder_in_2[580:297] <= W0[580:297];
+                    adder_in_3[580:297] <= {2'b0, U0, 2'b0};
+                    adder_in_4[580:297] <= {1'b0, U0, 3'b0};
+                    adder_in_5[580:297] <= 284'b0;
+                    adder_in_1[283:0] <= W2[580:297];
+                    adder_in_2[283:0] <= W6[580:297];
+                    adder_in_3[283:0] <= {2'b0, V0, 2'b0};
+                    adder_in_4[283:0] <= {1'b0, V0, 3'b0};
+                    adder_in_5[283:0] <= 284'b0;
                     state <= 9;
                 end
 
                 9 : begin
+                    W1[580:297] <= adder_out[580:297];
+                    W2[580:297] <= adder_out[283:0];
+                    adder_in_1[580:297] <= {W0[580:297]};
+                    adder_in_2[580:297] <= {U3, 4'b0};
+                    adder_in_3[580:297] <= 284'b0;
+                    adder_in_4[580:297] <= 284'b0;
+                    adder_in_5[580:297] <= 284'b0;
+                    adder_in_1[283:0] <= W6[580:297];
+                    adder_in_2[283:0] <= {V3, 4'b0};   
+                    adder_in_3[283:0] <= 284'b0;
+                    adder_in_4[283:0] <= 284'b0;
+                    adder_in_5[283:0] <= 284'b0;
+                    state <= 110;
+                end
 
-                    W1 <= adder_1_out;
-                    W2 <= adder_2_out;
-                    adder_1_in_1 <= W0;
-                    adder_1_in_2 <= {U3, 4'b0};
-                    adder_1_in_3 <= 284'b0;
-                    adder_1_in_4 <= 284'b0;
-                    adder_1_in_5 <= 284'b0;
-                    adder_2_in_1 <= W6;
-                    adder_2_in_2 <= {V3, 4'b0};   
-                    adder_2_in_3 <= 284'b0;
-                    adder_2_in_4 <= 284'b0;
-                    adder_2_in_5 <= 284'b0;
+                110: begin
+                    W0[580:297] <= adder_out[580:297];
+                    W6[580:297] <= adder_out[283:0];
                     state <= 10;
+
                 end
 
                 10: begin
-                    W0 <= adder_1_out;
-                    W6 <= adder_2_out;
-                    mult_1_in_1 <= W1;
-                    mult_1_in_2 <= W2;
-                    mult_2_in_1 <= adder_1_out;
-                    mult_2_in_2 <= adder_2_out;
+                    mult_1_in_1 <= W1[580:297];
+                    mult_1_in_2 <= W2[580:297];
+                    mult_2_in_1 <= W0[580:297];
+                    mult_2_in_2 <= W6[580:297];
                     seq70_reset_1 <= 0;
                     seq70_reset_2 <= 0;
                     state <= 11;
-                end                            
+                end
+
+                            
                            
                 11: begin
                     if(seq70done_1 && seq70done_2) begin
-                        // $display("%b", mult_1_out_ext);
-                        // $display("%b", mult_2_out_ext);
-                        W1_ext <= mult_1_out_ext;
-                        W2_ext <= mult_2_out_ext;
+                        seq70_reset_1 <= 1;
+                        seq70_reset_2 <= 1;
+                        W1 <= mult_1_out_ext;
+                        W2 <= mult_2_out_ext;
                         mult_1_in_1 <= {U3, 4'b0};
                         mult_1_in_2 <= {V3, 4'b0};
                         mult_2_in_1 <= {U0, 4'b0};
                         mult_2_in_2 <= {V0, 4'b0};
-                        seq70_reset_1 <= 1;
-                        seq70_reset_2 <= 1;
-                        state <= 113;
-                    end
 
+                        state <= 32;
+                    end
+            
                     else begin
                         state <= 11;
                     end
-
                 end
 
-                113: begin
+                32: begin 
                     seq70_reset_1 <= 0;
                     seq70_reset_2 <= 0;
-                    state <=12;
-
+                    state <= 72;
                 end
-
-                 // #interpolation
-                12: begin
+                72: begin
                     if(seq70done_1 && seq70done_2) begin
-                        W6_ext <= mult_1_out_ext;
-                        W0_ext <= mult_2_out_ext;
-                        adder_3_in_1 <= W1_ext;
-                        adder_3_in_2 <= W2_ext;
-                        adder_3_in_3 <= mult_2_out_ext;
-                        adder_3_in_4 <= mult_2_out_ext>>2;
-                        adder_3_in_5 <= mult_2_out_ext>>4;
-                        adder_3_in_6 <= 581'b0;
                         seq70_reset_1 <= 1;
                         seq70_reset_2 <= 1;
-                        state <= 13;
-                    end
-                    else begin
+                        W6 <= mult_1_out_ext;
+                        W0 <= mult_2_out_ext;
                         state <= 12;
                     end
-
+                    else begin
+                        state <= 72;
+                    end
                 end
+                 // #interpolation
+                12: begin
+                    adder_in_1 <= W1;
+                    adder_in_2 <= W2;
+                    adder_in_3 <= W0;
+                    adder_in_4 <= {2'b0, W0[580:2]};
+                    adder_in_5 <= {4'b0, W0[580:4]};
+                    adder_in_6 <= 581'b0;
+
+                    state <= 73;
+                end
+
+                73: begin
+                    W1 <= adder_out;
+                    state <= 13;
+                end
+
                 13: begin /////////////////////////
-                    W1_ext <= adder_3_out;
-                    adder_3_in_1 <= W5_ext;
-                    adder_3_in_2 <= W4_ext;
-                    adder_3_in_3 <= W6_ext>>4;
-                    adder_3_in_4 <= W6_ext>>2;
-                    adder_3_in_5 <= W6_ext;
-                    adder_3_in_6 <= adder_3_out;
+                    adder_in_1 <= W5;
+                    adder_in_2 <= W4;
+                    adder_in_3 <= {4'b0, W6[580:4]};
+                    adder_in_4 <= {2'b0, W6[580:2]};
+                    adder_in_5 <= W6;
+                    adder_in_6 <= W1;
                     state <= 14;
+                    div_1_rst <= 1;
                 end
                 
                 14: begin
-                    // $display("%b", adder_3_out);
-                    dividend_1 <= adder_3_out;
-                    adder_3_in_1 <= W2_ext;
-                    adder_3_in_2 <= W6_ext;
-                    adder_3_in_3 <= W0_ext>>6;
-                    adder_3_in_4 <= 581'b0;
-                    adder_3_in_5 <= 581'b0;
-                    adder_3_in_6 <= 581'b0;
-                    state <= 15;
+                    // $display("%b", adder_out);
+                    dividend_1 <= adder_out;
+                    div_1_rst <= 0;
+                    adder_in_1 <= W2;
+                    adder_in_2 <= W6;
+                    adder_in_3 <= {6'b0, W0[580:6]};
+                    adder_in_4 <= 581'b0;
+                    adder_in_5 <= 581'b0;
+                    adder_in_6 <= 581'b0;
+                    state <= 75;
                 end
 
+                75: begin
+                    if(div_1_done) begin
+                        W5 <= quotient_1;
+                        W2 <= adder_out;
+                        state <= 15;
+                    end
+                    else begin
+                        state <= 75;
+                    end
+                
+                end
+
+
                 15: begin
-                    W5_ext <= quotient_1;
-                    W2_ext <= adder_3_out;
-                    adder_3_in_1 <= W4_ext;
-                    adder_3_in_2 <= adder_3_out;
-                    adder_3_in_3 <= W6_ext>>6;
-                    adder_3_in_4 <= W0_ext;
-                    adder_3_in_5 <= quotient_1>>5; //W5_ext
-                    adder_3_in_6 <= quotient_1>>1;
+                    adder_in_1 <= W4;
+                    adder_in_2 <= W2;
+                    adder_in_3 <= {6'b0, W6[580:6]};
+                    adder_in_4 <= W0;
+                    adder_in_5 <= {5'b0, W5[580:5]}; //W5
+                    adder_in_6 <= {1'b0, W5[580:1]};
+                    div_2_rst <= 1;
                     state <= 16;
                 end
 
                 16: begin
-                    dividend_2 <= adder_3_out;
+                    dividend_2 <= adder_out;
+                    div_2_rst <= 0;
                     state <= 17;
                 end
 
                 17: begin //////////////////////
-                    W4_ext <= quotient_2;
-                    adder_3_in_1 <= W3;
-                    adder_3_in_2 <= W0_ext;
-                    adder_3_in_3 <= W6_ext;
-                    adder_3_in_4 <= 581'b0;
-                    adder_3_in_5 <= 581'b0;
-                    adder_3_in_6 <= 581'b0;
+
+                    if(div_2_done) begin
+                        W4 <= quotient_2;
+                        adder_in_1 <= W3;
+                        adder_in_2 <= W0;
+                        adder_in_3 <= W6;
+                        adder_in_4 <= 581'b0;
+                        adder_in_5 <= 581'b0;
+                        adder_in_6 <= 581'b0;
+                        state <= 78;
+                    end
+                    
+                    else begin
+                        state <= 17;
+                    end
+
+                end
+
+                78: begin
+                    W3 <= adder_out;
                     state <= 18;
                 end
 
+
                 18: begin
-                    W3 <= adder_3_out;
-                    adder_3_in_1 <= W1_ext;
-                    adder_3_in_2 <= adder_3_out;
-                    adder_3_in_3 <= 581'b0;
-                    adder_3_in_4 <= 581'b0;
-                    adder_3_in_5 <= 581'b0;
-                    adder_3_in_6 <= 581'b0;
+                    adder_in_1 <= W1;
+                    adder_in_2 <= W3;
+                    adder_in_3 <= 581'b0;
+                    adder_in_4 <= 581'b0;
+                    adder_in_5 <= 581'b0;
+                    adder_in_6 <= 581'b0;
+                    state <= 79;
+                end
+
+                79: begin
+                    W1 <= adder_out;
                     state <= 19;
                 end
 
                 19: begin
-                    W1_ext <= adder_3_out;
-                    adder_3_in_1 <= W2_ext;
-                    adder_3_in_2 <= adder_3_out>>1;
-                    adder_3_in_3 <= W3>>2;
-                    adder_3_in_4 <= 581'b0;
-                    adder_3_in_5 <= 581'b0;
-                    adder_3_in_6 <= 581'b0;
+                    adder_in_1 <= W2;
+                    adder_in_2 <= {1'b0, W1[580:1]};
+                    adder_in_3 <= {2'b0, W3[580:2]};
+                    adder_in_4 <= 581'b0;
+                    adder_in_5 <= 581'b0;
+                    adder_in_6 <= 581'b0;
                     state <= 20;
                 end
 
                 20: begin
-                    W2_ext <= adder_3_out;
-                    adder_3_in_1 <= W3;
-                    adder_3_in_2 <= W4_ext;
-                    adder_3_in_3 <= W5_ext;
-                    adder_3_in_4 <= 581'b0;
-                    adder_3_in_5 <= 581'b0;
-                    adder_3_in_6 <= 581'b0;
+                    W2 <= adder_out;
+                    adder_in_1 <= W3;
+                    adder_in_2 <= W4;
+                    adder_in_3 <= W5;
+                    adder_in_4 <= 581'b0;
+                    adder_in_5 <= 581'b0;
+                    adder_in_6 <= 581'b0;
+                    state <= 81;
+                end
+
+                81: begin
+                    W3 <= adder_out;
                     state <= 21;
                 end
 
                 21: begin
-                    W3 <= adder_3_out;
-                    adder_3_in_1 <= W1_ext;
-                    adder_3_in_2 <= adder_3_out>>2;    
-                    adder_3_in_3 <= adder_3_out>>1;    
+                    adder_in_1 <= W1;
+                    adder_in_2 <= {2'b0, W3[580:2]};    
+                    adder_in_3 <= {1'b0, W3[580:1]};    
+                    div_1_rst <= 1;
                     state <= 22;
                 end
 
                 22: begin
-                    dividend_1 <= adder_3_out;
-                    state <= 23;
+                    dividend_1 <= adder_out;
+                    div_1_rst <= 0;
+                    state <= 83;
+                end
+
+                83: begin
+                    if(div_1_done) begin
+                        W1 <= quotient_1;
+                        state <= 23;
+                    end
+                    else begin
+                        state <=83;
+                    end
+                    
                 end
 
                 23: begin
-                    W1_ext <= quotient_1;
-                    adder_3_in_1 <= W5_ext;
-                    adder_3_in_2 <= quotient_1;
-                    adder_3_in_3 <= 581'b0;
-                    adder_3_in_4 <= 581'b0;
-                    adder_3_in_5 <= 581'b0;
-                    adder_3_in_6 <= 581'b0;
+                    adder_in_1 <= W5;
+                    adder_in_2 <= W1;
+                    adder_in_3 <= 581'b0;
+                    adder_in_4 <= 581'b0;
+                    adder_in_5 <= 581'b0;
+                    adder_in_6 <= 581'b0;
 
-                    state <= 24;
+                    state <= 84;
                 end
 
+                84: begin
+                    W5 <= adder_out;
+                    state <= 24;    
+                end    
+
                 24: begin
-                    W5_ext <= adder_3_out;
-                    adder_3_in_1 <= W2_ext;
-                    adder_3_in_2 <= adder_3_out>>2;    
-                    adder_3_in_3 <= adder_3_out>>1;    
+                    adder_in_1 <= W2;
+                    adder_in_2 <= {2'b0, W5[580:2]};    
+                    adder_in_3 <= {1'b0, W5[580:1]};    
+                    div_2_rst <= 1;
                     state <= 25;
                 end
 
                 25: begin
-                    dividend_2 <= adder_3_out;
-                    state <= 26;
+                    dividend_2 <= adder_out;
+                    div_2_rst <= 0;
+                    state <= 86;
+                end
+
+                86: begin
+                    if(div_2_done) begin
+                        W2 <= quotient_2;
+                        state <= 26;
+                    end
+                    else begin
+                        state <=86;
+                    end
                 end
 
                 26: begin
-                    W2_ext <= quotient_2;
-                    adder_3_in_1 <= W4_ext;
-                    adder_3_in_2 <= quotient_2;
-                    adder_3_in_3 <= 581'b0;
-                    adder_3_in_4 <= 581'b0;
-                    adder_3_in_5 <= 581'b0;      
-                    adder_3_in_6 <= 581'b0;
+                    adder_in_1 <= W4;
+                    adder_in_2 <= W2;
+                    adder_in_3 <= 581'b0;
+                    adder_in_4 <= 581'b0;
+                    adder_in_5 <= 581'b0;      
+                    adder_in_6 <= 581'b0;
                     state <= 27;
                 end
 
                 27: begin
-                    // $display("W0 %b\n", W0_ext);
-                    // $display("W1 %b\n", W1_ext);
-                    // $display("W2 %b\n", W2_ext);
-                    // $display("W3 %b\n", W3);
-                    // $display("W4 %b\n", adder_3_out);
-                    // $display("W5 %b\n", W5_ext);
-                    // $display("W6 %b\n\n", W6_ext);
-                    W4_ext <= adder_3_out;
-                    final <= {W0_ext, 1659'b0} ^ {280'b0, W1_ext, 1379'b0} ^ {560'b0, W2_ext, 1099'b0} ^ {840'b0, W3, 819'b0} ^ {1120'b0, adder_3_out, 539'b0} ^ {1400'b0, W5_ext, 259'b0} ^ {1680'b0, W6_ext[580:21]} ;
+                    W4 <= adder_out;
                     state <= 28;
                 end
 
                 28: begin
+                    final <= {W0, 1659'b0} ^ {280'b0, W1, 1379'b0} ^ {560'b0, W2, 1099'b0} ^ {840'b0, W3, 819'b0} ^ {1120'b0, W4, 539'b0} ^ {1400'b0, W5, 259'b0} ^ {1680'b0, W6[580:21]} ;
                     done <= 1;
                     state <= 28;
                 end
