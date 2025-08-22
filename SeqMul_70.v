@@ -2,6 +2,8 @@
 `include "SixInputAdder.v"
 `include "div_by_x4_plus_x2.v"
 `include "div_by_x4_plus_x.v"
+`include "div.v"
+`include "div2.v"
 
 module SeqMul_70(clk, reset, U0, U1, U2, U3, V0, V1, V2, V3, W, done);
     input clk, reset;
@@ -42,26 +44,41 @@ module SeqMul_70(clk, reset, U0, U1, U2, U3, V0, V1, V2, V3, W, done);
     );
 
     reg [161:0] dividend_1, dividend_2;
-    wire [161:0] quotient_1, quotient_2;
+    wire [191:0] quotient_1, quotient_2;
 
     reg div_1_rst, div_2_rst;
     wire div_1_done, div_2_done;
 
-    div_by_x4_plus_x #(162) div1 (
+    // div_by_x4_plus_x #(162) div1 (
+    // .clk(clk), 
+    // .rst(div_1_rst),
+    // .p(dividend_1),
+    // .q(quotient_1),
+    // .done(div_1_done)
+    // );
+    divide_1 #(192) div1 (
     .clk(clk), 
     .rst(div_1_rst),
-    .p(dividend_1),
-    .q(quotient_1),
+    .in({dividend_1, 30'b0}),
+    .out(quotient_1),
     .done(div_1_done)
     );
 
-    div_by_x4_plus_x2 #(162) div8 (
+    divide_2 #(192) div2 (
     .clk(clk), 
     .rst(div_2_rst),
-    .p(dividend_2),
-    .q(quotient_2),
+    .in({dividend_2, 30'b0}),
+    .out(quotient_2),
     .done(div_2_done)
     );
+
+    // div_by_x4_plus_x2 #(162) div8 (
+    // .clk(clk), 
+    // .rst(div_2_rst),
+    // .p(dividend_2),
+    // .q(quotient_2),
+    // .done(div_2_done)
+    // );
 
     reg [161:0] adder_in_1, adder_in_2, adder_in_3, adder_in_4, adder_in_5, adder_in_6;
     wire [161:0] adder_out;
@@ -78,7 +95,6 @@ module SeqMul_70(clk, reset, U0, U1, U2, U3, V0, V1, V2, V3, W, done);
 
 
     always @(posedge clk) begin
-        // $display("inner %d", state);
         if(reset) begin
             state <= 0;
             done <= 0;
@@ -305,7 +321,6 @@ module SeqMul_70(clk, reset, U0, U1, U2, U3, V0, V1, V2, V3, W, done);
                 end
                 
                 14: begin
-                    // $display("%b", adder_out);
                     dividend_1 <= adder_out;
                     div_1_rst <= 0;
                     adder_in_1 <= W2;
@@ -315,11 +330,12 @@ module SeqMul_70(clk, reset, U0, U1, U2, U3, V0, V1, V2, V3, W, done);
                     adder_in_5 <= 162'b0;
                     adder_in_6 <= 162'b0;
                     state <= 75;
+                    
                 end
 
                 75: begin
                     if(div_1_done) begin
-                        W5 <= quotient_1;
+                        W5 <= quotient_1[191:30];
                         W2 <= adder_out;
                         state <= 15;
                     end
@@ -331,6 +347,7 @@ module SeqMul_70(clk, reset, U0, U1, U2, U3, V0, V1, V2, V3, W, done);
 
 
                 15: begin
+
                     adder_in_1 <= W4;
                     adder_in_2 <= W2;
                     adder_in_3 <= {6'b0, W6[161:6]};
@@ -350,7 +367,7 @@ module SeqMul_70(clk, reset, U0, U1, U2, U3, V0, V1, V2, V3, W, done);
                 17: begin //////////////////////
 
                     if(div_2_done) begin
-                        W4 <= quotient_2;
+                        W4 <= quotient_2[191:30];
                         adder_in_1 <= W3;
                         adder_in_2 <= W0;
                         adder_in_3 <= W6;
@@ -429,7 +446,7 @@ module SeqMul_70(clk, reset, U0, U1, U2, U3, V0, V1, V2, V3, W, done);
 
                 83: begin
                     if(div_1_done) begin
-                        W1 <= quotient_1;
+                        W1 <= quotient_1[191:30];
                         state <= 23;
                     end
                     else begin
@@ -469,8 +486,9 @@ module SeqMul_70(clk, reset, U0, U1, U2, U3, V0, V1, V2, V3, W, done);
                 end
 
                 86: begin
+
                     if(div_2_done) begin
-                        W2 <= quotient_2;
+                        W2 <= quotient_2[191:30];
                         state <= 26;
                     end
                     else begin
@@ -479,6 +497,7 @@ module SeqMul_70(clk, reset, U0, U1, U2, U3, V0, V1, V2, V3, W, done);
                 end
 
                 26: begin
+                    
                     adder_in_1 <= W4;
                     adder_in_2 <= W2;
                     adder_in_3 <= 162'b0;
@@ -489,11 +508,13 @@ module SeqMul_70(clk, reset, U0, U1, U2, U3, V0, V1, V2, V3, W, done);
                 end
 
                 27: begin
+
                     W4 <= adder_out;
                     state <= 28;
                 end
 
                 28: begin
+
                     final <= {W0, 406'b0} ^ {71'b0, W1, 335'b0} ^ {142'b0, W2, 264'b0} ^ {213'b0, W3, 193'b0} ^ {284'b0, W4, 122'b0} ^ {355'b0, W5, 51'b0} ^ {426'b0, W6[161:20]} ;
                     done <= 1;
                     state <= 28;

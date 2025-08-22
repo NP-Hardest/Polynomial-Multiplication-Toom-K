@@ -68,24 +68,26 @@ module SeqMul_4460(clk, reset, U0, U1, U2, U3, V0, V1, V2, V3, W, done);
     );
 
     reg [8940:0] dividend_1, dividend_2;
-    wire [8940:0] quotient_1, quotient_2;
+    wire [8959:0] quotient_1, quotient_2;
+
+    //8960:20
 
     reg div_1_rst, div_2_rst;
     wire div_1_done, div_2_done;
 
-    div_by_x4_plus_x #(8941) div1 (
+    divide_1 #(8960) div1 (
     .clk(clk), 
     .rst(div_1_rst),
-    .p(dividend_1),
-    .q(quotient_1),
+    .in({dividend_1, 19'b0}),
+    .out(quotient_1),
     .done(div_1_done)
     );
 
-    div_by_x4_plus_x2 #(8941) div8 (
+    divide_2 #(8960) div8 (
     .clk(clk), 
     .rst(div_2_rst),
-    .p(dividend_2),
-    .q(quotient_2),
+    .in({dividend_2, 19'b0}),
+    .out(quotient_2),
     .done(div_2_done)
     );
 
@@ -407,7 +409,7 @@ module SeqMul_4460(clk, reset, U0, U1, U2, U3, V0, V1, V2, V3, W, done);
 
                 75: begin
                     if(div_1_done) begin
-                        W5 <= quotient_1;
+                        W5 <= quotient_1[8969:19];
                         W2 <= adder_out;
                     $display(state);
                         state <= 15;
@@ -441,7 +443,7 @@ module SeqMul_4460(clk, reset, U0, U1, U2, U3, V0, V1, V2, V3, W, done);
                 17: begin //////////////////////
 
                     if(div_2_done) begin
-                        W4 <= quotient_2;
+                        W4 <= quotient_2[8969:19];
                         adder_in_1 <= W3;
                         adder_in_2 <= W0;
                         adder_in_3 <= W6;
@@ -529,7 +531,7 @@ module SeqMul_4460(clk, reset, U0, U1, U2, U3, V0, V1, V2, V3, W, done);
 
                 83: begin
                     if(div_1_done) begin
-                        W1 <= quotient_1;
+                        W1 <= quotient_1[8969:19];
                         state <= 23;
                     $display(state);
                     end
@@ -575,7 +577,7 @@ module SeqMul_4460(clk, reset, U0, U1, U2, U3, V0, V1, V2, V3, W, done);
 
                 86: begin
                     if(div_2_done) begin
-                        W2 <= quotient_2;
+                        W2 <= quotient_2[8969:19];
                         state <= 26;
                     $display(state);
                     end

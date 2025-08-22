@@ -1,50 +1,41 @@
-module tb_div_by_x4_plus_x;
+`timescale 1ns/1ps
 
-    parameter N = 1120;
+module tb_divide_1;
 
-    reg clk;
-    reg reset;
-    reg [N-1:0] p;
-    wire [N-1:0] q;
+    parameter N = 128;  // keep small for test (2 words = 64 bits)
+
+    reg clk, rst;
+    reg [N-1:0] in;
+    wire [N-1:0] out;
     wire done;
 
-    div_by_x4_plus_x2 #(N) dut (
+    // DUT
+    divide_2 #(.N(N)) dut (
         .clk(clk),
-        .rst(reset),
-        .p(p),
-        .q(q),
+        .rst(rst),
+        .in(in),
+        .out(out),
         .done(done)
     );
 
-    // Clock generator: 10ns period
+    // clock generation
+    initial clk = 0;
+    always #5 clk = ~clk;  // 100 MHz clock
+
     initial begin
-        clk = 0;
-        forever #5 clk = ~clk;
-    end
+        // init
+        rst = 1;
+        in  = {32'h00000001, 32'h40000000,64'b0};  // example polynomial
+        #20 rst = 0;                  // release reset
 
-    // Stimulus
-    initial begin
-        // Init
-        reset = 1;
-        p = 0;
-
-        // Apply reset for a couple of cycles
-        #20;
-        reset = 0;
-
-        // Example input polynomial
-        p = {9'b000111100, 1111'b0};
-
-        // Wait until done
+        // wait until done
         wait(done);
 
-        // Display result
-        $display("Input p = %b", p);
-        $display("Output q = %b", q);
+        // display results
+        $display("Input  = %b", in);
+        $display("Output = %b", out);
 
-        // Finish simulation
-        #20;
-        $finish;
+        #20 $finish;
     end
 
 endmodule
