@@ -1,8 +1,3 @@
-`include "ks75.v"
-
-`include "SeqMul_1116.v"
-`include "Break4464.v"
-
 module SeqMul_4460(clk, reset, U0, U1, U2, U3, V0, V1, V2, V3, W, done);
     input clk, reset;
     input [4459:0] U0, U1, U2, U3;
@@ -409,7 +404,7 @@ module SeqMul_4460(clk, reset, U0, U1, U2, U3, V0, V1, V2, V3, W, done);
 
                 75: begin
                     if(div_1_done) begin
-                        W5 <= quotient_1[8969:19];
+                        W5 <= quotient_1[8959:19];
                         W2 <= adder_out;
                     $display(state);
                         state <= 15;
@@ -443,7 +438,7 @@ module SeqMul_4460(clk, reset, U0, U1, U2, U3, V0, V1, V2, V3, W, done);
                 17: begin //////////////////////
 
                     if(div_2_done) begin
-                        W4 <= quotient_2[8969:19];
+                        W4 <= quotient_2[8959:19];
                         adder_in_1 <= W3;
                         adder_in_2 <= W0;
                         adder_in_3 <= W6;
@@ -531,7 +526,7 @@ module SeqMul_4460(clk, reset, U0, U1, U2, U3, V0, V1, V2, V3, W, done);
 
                 83: begin
                     if(div_1_done) begin
-                        W1 <= quotient_1[8969:19];
+                        W1 <= quotient_1[8959:19];
                         state <= 23;
                     $display(state);
                     end
@@ -577,7 +572,7 @@ module SeqMul_4460(clk, reset, U0, U1, U2, U3, V0, V1, V2, V3, W, done);
 
                 86: begin
                     if(div_2_done) begin
-                        W2 <= quotient_2[8969:19];
+                        W2 <= quotient_2[8959:19];
                         state <= 26;
                     $display(state);
                     end

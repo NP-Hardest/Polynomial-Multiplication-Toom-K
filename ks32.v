@@ -9,7 +9,7 @@
 ********************************************************/
 `ifndef __KS_32_V__
 `define __KS_32_V__
-`include "ks16.v"
+// `include "ks16.v"
 module ks32(a, b, d);
 
 input wire [31:0] a;

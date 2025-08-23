@@ -9,7 +9,7 @@
 ********************************************************/
 `ifndef __KS_4_V__
 `define __KS_4_V__
-`include "ks2.v"
+// `include "ks2.v"
 module ks4(a, b, d);
 
 input wire [3:0] a;

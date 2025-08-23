@@ -1,10 +1,3 @@
-`include "ks75.v"
-// `include "SixInputAdder.v"
-// `include "div_by_x4_plus_x2.v"
-// `include "div_by_x4_plus_x.v"
-`include "SeqMul_70.v"
-
-
 module SeqMul_280(clk, reset, U0, U1, U2, U3, V0, V1, V2, V3, W, done);
     input clk, reset;
     input [279:0] U0, U1, U2, U3;
@@ -26,6 +19,11 @@ module SeqMul_280(clk, reset, U0, U1, U2, U3, V0, V1, V2, V3, W, done);
     reg [283:0] mult_1_in_1, mult_1_in_2;
     reg [283:0] mult_2_in_1, mult_2_in_2;
 
+    wire [70:0] mult_1_in_1_a, mult_1_in_1_b, mult_1_in_1_c, mult_1_in_1_d;
+    wire [70:0] mult_1_in_2_a, mult_1_in_2_b, mult_1_in_2_c, mult_1_in_2_d;
+    wire [70:0] mult_2_in_1_a, mult_2_in_1_b, mult_2_in_1_c, mult_2_in_1_d;
+    wire [70:0] mult_2_in_2_a, mult_2_in_2_b, mult_2_in_2_c, mult_2_in_2_d;
+
     wire [567:0] mult_1_out, mult_2_out;
 
     wire [580:0] mult_1_out_ext = {mult_1_out, 13'b0};
@@ -37,13 +35,18 @@ module SeqMul_280(clk, reset, U0, U1, U2, U3, V0, V1, V2, V3, W, done);
     wire seq70done_1;
     wire seq70done_2;
 
+    Break284 dut1(mult_1_in_1, mult_1_in_1_a, mult_1_in_1_b, mult_1_in_1_c, mult_1_in_1_d);
+    Break284 dut2(mult_1_in_2, mult_1_in_2_a, mult_1_in_2_b, mult_1_in_2_c, mult_1_in_2_d);
+    Break284 dut3(mult_2_in_1, mult_2_in_1_a, mult_2_in_1_b, mult_2_in_1_c, mult_2_in_1_d);
+    Break284 dut4(mult_2_in_2, mult_2_in_2_a, mult_2_in_2_b, mult_2_in_2_c, mult_2_in_2_d);
+
 
 
     SeqMul_70 mult_1(
         .clk(clk),
         .reset(seq70_reset_1),
-        .U0(mult_1_in_1[283:213]), .U1(mult_1_in_1[212:142]), .U2(mult_1_in_1[141:71]), .U3(mult_1_in_1[70:0]),
-        .V0(mult_1_in_2[283:213]), .V1(mult_1_in_2[212:142]), .V2(mult_1_in_2[141:71]), .V3(mult_1_in_2[70:0]),
+        .U0(mult_1_in_1_a), .U1(mult_1_in_1_b), .U2(mult_1_in_1_c), .U3(mult_1_in_1_d),
+        .V0(mult_1_in_2_a), .V1(mult_1_in_2_b), .V2(mult_1_in_2_c), .V3(mult_1_in_2_d),
         .W(mult_1_out),
         .done(seq70done_1)
     );
@@ -51,8 +54,8 @@ module SeqMul_280(clk, reset, U0, U1, U2, U3, V0, V1, V2, V3, W, done);
     SeqMul_70 mult_2(
         .clk(clk),
         .reset(seq70_reset_2),
-        .U0(mult_2_in_1[283:213]), .U1(mult_2_in_1[212:142]), .U2(mult_2_in_1[141:71]), .U3(mult_2_in_1[70:0]),
-        .V0(mult_2_in_2[283:213]), .V1(mult_2_in_2[212:142]), .V2(mult_2_in_2[141:71]), .V3(mult_2_in_2[70:0]),
+        .U0(mult_2_in_1_a), .U1(mult_2_in_1_b), .U2(mult_2_in_1_c), .U3(mult_2_in_1_d),
+        .V0(mult_2_in_2_a), .V1(mult_2_in_2_b), .V2(mult_2_in_2_c), .V3(mult_2_in_2_d),
         .W(mult_2_out),
         .done(seq70done_2)
     );

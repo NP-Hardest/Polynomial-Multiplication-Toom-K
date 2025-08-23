@@ -9,7 +9,7 @@
 ********************************************************/
 `ifndef __KS_3_V__
 `define __KS_3_V__
-`include "ks2.v"
+// `include "ks2.v"
 module ks3(a, b, d);
 
 input wire [2:0] a;

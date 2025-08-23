@@ -1,6 +1,6 @@
 module Break284(in, out1, out2, out3, out4);
-    input [283:0] in
-    output [71:0] out1, out2, out3, out4;
+    input [283:0] in;
+    output [70:0] out1, out2, out3, out4;
 
 
     assign out1 = in[283:213];

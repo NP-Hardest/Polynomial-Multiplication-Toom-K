@@ -9,8 +9,8 @@
 ********************************************************/
 `ifndef __KS_11_V__
 `define __KS_11_V__
-`include "ks8.v"
-`include "ks3.v"
+// `include "ks8.v"
+// `include "ks3.v"
 module ks11(a, b, d);
 
 input wire [10:0] a;

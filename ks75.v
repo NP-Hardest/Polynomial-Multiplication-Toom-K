@@ -9,8 +9,8 @@
 ********************************************************/
 `ifndef __KS_75_V__
 `define __KS_75_V__
-`include "ks64.v"
-`include "ks11.v"
+// `include "ks64.v"
+// `include "ks11.v"
 module ks75(a, b, d);
 
 input wire [74:0] a;

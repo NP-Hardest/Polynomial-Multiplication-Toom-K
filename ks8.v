@@ -9,7 +9,7 @@
 ********************************************************/
 `ifndef __KS_8_V__
 `define __KS_8_V__
-`include "ks4.v"
+// `include "ks4.v"
 module ks8(a, b, d);
 
 input wire [7:0] a;

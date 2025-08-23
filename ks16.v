@@ -9,7 +9,7 @@
 ********************************************************/
 `ifndef __KS_16_V__
 `define __KS_16_V__
-`include "ks8.v"
+// `include "ks8.v"
 module ks16(a, b, d);
 
 input wire [15:0] a;
