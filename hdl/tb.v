@@ -29,16 +29,34 @@ module tb_SeqMul_64;
     reg [17668:0] U;
     reg [17668:0] V;
     wire [35337:0] W;
+    
+    // reg [17839:0] U;
+    // reg [17839:0] V;
+    // wire [35679:0] W;
+
+    // reg [4463:0] U;
+    // reg [4463:0] V;
+    // wire [8927:0] W;
+
+
     wire done;
 
     integer cycle_count;
 
     // DUT
+    // SeqMul_1116 dut(
+    //     .clk(clk),
+    //     .reset(reset),
+    //     .U0(U[4463:3348]), .U1(U[3347:2232]), .U2(U[2231:1116]), .U3(U[1115:0]),
+    //     .V0(V[4463:3348]), .V1(V[3347:2232]), .V2(V[2231:1116]), .V3(V[1115:0]),
+    //     .W(W),
+    //     .done(done)
+    // );
     // SeqMul_4460 dut(
     //     .clk(clk),
     //     .reset(reset),
-    //     .U0(U0), .U1(U1), .U2(U2), .U3(U3),
-    //     .V0(V0), .V1(V1), .V2(V2), .V3(V3),
+    //     .U0(U[17839:13380]), .U1(U[13379:8920]), .U2(U[8919:4460]), .U3(U[4459:0]),
+    //     .V0(V[17839:13380]), .V1(V[13379:8920]), .V2(V[8919:4460]), .V3(V[4459:0]),
     //     .W(W),
     //     .done(done)
     // );
@@ -49,6 +67,14 @@ module tb_SeqMul_64;
     wire [17668:0] A = U;
     wire [17668:0] B = V;
     wire [35337:0] W_ref;
+
+    // wire [17839:0] A = U;
+    // wire [17839:0] B = V;
+    // wire [35679:0] W_ref;
+
+    // wire [4463:0] A = U;
+    // wire [4463:0] B = V;
+    // wire [8927:0] W_ref;
 
     gf2_schoolbook_mult #(17669) ref(
         .a(A),
@@ -85,10 +111,17 @@ module tb_SeqMul_64;
         // U0=0; U1=0; U2=0; U3=4460'd1;
         // V0=0; V1=0; V2=0; V3=4460'd1;
 
+        // U = {3'b101, 17666'd7827828728728};
+        // V = {3'b110, 17666'd7827872878728};
+
         U = 4892378128957813477589134;
         V = 2398457699321345184592348;
+        // U = 17669'd8492384982347;
+        // U = 17669'd2394938349583;
+        // U = 4464'd8492384982347;
+        // U = 4464'd2394938349583;
         wait(done);
-        // $display("Test1: DUT=%b, REF=%b", W, W_ref);
+        $display("Test1: DUT=%b, REF=%b", W, W_ref);
         $display("Test1 took %0d cycles", cycle_count);
         if (W === W_ref) $display("PASS");
         else $display("FAIL");
